@@ -1,16 +1,17 @@
 package ch.g24.api.controller;
 
-import ch.g24.api.models.Data;
-import ch.g24.api.models.Entry;
-import ch.g24.api.models.User;
+import ch.g24.api.models.*;
 import ch.g24.api.services.AnalysisService;
 import ch.g24.api.services.DataService;
+import ch.g24.api.services.DeepSeekService;
 import ch.g24.api.services.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +24,13 @@ public class G24Controller {
     private final UserService userService;
     private final DataService dataService;
     private final AnalysisService analysisService;
+    private final DeepSeekService deepSeekService;
 
-    public G24Controller(UserService userService, DataService dataService, AnalysisService analysisService) {
+    public G24Controller(UserService userService, DataService dataService, AnalysisService analysisService, DeepSeekService deepSeekService) {
         this.userService = userService;
         this.dataService = dataService;
         this.analysisService = analysisService;
+        this.deepSeekService = deepSeekService;
     }
 
     @GetMapping("/user/{userId}")
@@ -52,7 +55,7 @@ public class G24Controller {
 
         boolean isAdded = dataService.addEntry(entry);
         if (isAdded) {
-            return ResponseEntity.ok(Map.of("message","Entry successfully added"));
+            return ResponseEntity.ok(Map.of("message", "Entry successfully added"));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to add entry"));
         }
@@ -77,12 +80,24 @@ public class G24Controller {
     }
 
     @GetMapping("/dashboard/{userId}")
-    public ResponseEntity<String> getDashboardData(@PathVariable Long userId) {
-        String dashboard = analysisService.getDashboard(userId);
-        if (dashboard.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(dashboard);
-        }
+    public ResponseEntity<DashBoardData> getDashboardData(@PathVariable Long userId) throws Exception {
+        DashBoardData dashboard = analysisService.getDashboard(userId);
+        List<Reading> readingList = dashboard.getWeeklyOverview().getReadings();
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(readingList);
+        Map<String, Object> map = new HashMap<>();
+        map.put("readings", json);
+        DeepSeekResult deepSeekResult = analyzePatientData(map);
+        AiAnalysis aiAnalysis = new AiAnalysis();
+        aiAnalysis.setHbA1cPrediction(deepSeekResult.getAi_analysis().getHbA1cPrediction());
+        aiAnalysis.setSummary(deepSeekResult.getAi_analysis().getSummary());
+        dashboard.setAiAnalysis(deepSeekResult.getAi_analysis());
+        dashboard.setSmartInsight(deepSeekResult.getSmart_insight());
+
+        return ResponseEntity.ok(dashboard);
     }
+    public DeepSeekResult analyzePatientData(Map<String, Object> patientData) throws Exception {
+        return deepSeekService.getAiAnalysis(patientData);
+    }
+
 }

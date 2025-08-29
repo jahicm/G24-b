@@ -1,8 +1,6 @@
 package ch.g24.api.repository.entities;
 
-import ch.g24.api.repository.entities.UserEntity;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,6 +37,14 @@ public class DataEntity {
 
     @Column(name = "STATUS")
     private String status;
+
+    public UnitEntity getUnitEntity() {
+        return unitEntity;
+    }
+
+    public void setUnitEntity(UnitEntity unitEntity) {
+        this.unitEntity = unitEntity;
+    }
 
     public Long getDataId() {
         return dataId;

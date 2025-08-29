@@ -57,7 +57,6 @@ public class UserService {
             userEntity.setSurname(user.lastName());
             userEntity.setDiabetesType(user.diabetesType());
             userEntity.setDob(user.dob());
-            userEntity.setMedication(user.medication());
             userEntity.setUnit(user.unit());
 
             // Handle location
