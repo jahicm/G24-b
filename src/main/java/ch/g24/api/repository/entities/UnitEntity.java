@@ -3,7 +3,7 @@ package ch.g24.api.repository.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "[UNIT]")
+@Table(name = "UNIT")
 public class UnitEntity {
 
     @Id

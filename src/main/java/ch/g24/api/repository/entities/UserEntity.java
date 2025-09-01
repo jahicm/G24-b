@@ -21,12 +21,13 @@ public class UserEntity {
             @JoinColumn(name = "city", referencedColumnName = "city")
     })
     private LocationEntity location;
-    private String medication;
-    private String unit;
+    private int unitId;
+
 
     public String getUserId() {
         return userId;
     }
+
     public String getName() {
         return name;
     }
@@ -41,14 +42,6 @@ public class UserEntity {
 
     public String getDiabetesType() {
         return diabetesType;
-    }
-
-    public String getMedication() {
-        return medication;
-    }
-
-    public String getUnit() {
-        return unit;
     }
 
     public void setName(String name) {
@@ -67,18 +60,21 @@ public class UserEntity {
         this.diabetesType = diabetesType;
     }
 
-    public void setMedication(String medication) {
-        this.medication = medication;
+    public void setUnitId(int unitId) {
+        this.unitId = unitId;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public int getUnitId() {
+        return unitId;
     }
+
     public LocationEntity getLocation() {
         return location;
     }
+
     public void setLocation(LocationEntity location) {
         this.location = location;
     }
+
 }
 
