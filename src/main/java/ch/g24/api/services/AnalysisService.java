@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -97,9 +98,10 @@ public class AnalysisService {
         weeklyAverageDouble = listOfLastWeekReadings.stream().mapToDouble(Reading::getSugarValue).average().orElse(0.0);
         LatestReadings latestReadings = new LatestReadings();
         WeeklyAverage weeklyAverage = new WeeklyAverage();
-        weeklyAverage.setValue(weeklyAverageDouble);
+        double weeklyAverageDoubleRounded = new BigDecimal(weeklyAverageDouble).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+        weeklyAverage.setValue(weeklyAverageDoubleRounded);
         weeklyAverage.setUnit(SugarUnit.getLabelById(userEntity.getUnitId()));
-        weeklyAverage.setStatus(calculateStatus(weeklyAverageDouble, weeklyAverage.getUnit()) );
+        weeklyAverage.setStatus(calculateStatus(weeklyAverageDouble, weeklyAverage.getUnit()));
         latestReadings.setReading(latestReading);
         latestReadings.setWeeklyAverage(weeklyAverage);
         WeeklyOverview weeklyOverview = new WeeklyOverview();
