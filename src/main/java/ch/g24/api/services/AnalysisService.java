@@ -8,28 +8,39 @@ import ch.g24.api.repository.entities.UserEntity;
 import ch.g24.api.repository.persistence.DataRepository;
 import ch.g24.api.repository.persistence.MedicationRepository;
 import ch.g24.api.repository.persistence.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 
 @Service
 public class AnalysisService {
 
-    @Value("${analisys-ai-url}")
-    private String analisys_url;
-
+    @Value("${DEEPSEEK_URL}")
+    private String DEEPSEEK_URL;
+    @Value("${DEEPSEEK_API_KEY}")
+    private String DEEPSEEK_API_KEY;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final DataRepository dataRepository;
     private final MedicationRepository medicationRepository;
     private final UserRepository userRepository;
+    private final String prompt = "Please analyze this lab report and summarize the findings.";
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public AnalysisService(DataRepository dataRepository, MedicationRepository medicationRepository, UserRepository userRepository) {
         this.dataRepository = dataRepository;
@@ -37,41 +48,76 @@ public class AnalysisService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<String> forwardFileToAIServer(MultipartFile file) {
+    public String forwardPdfToDeepSeek(MultipartFile file) throws Exception {
         if (file == null || file.isEmpty()) {
-            return ResponseEntity.badRequest().body("No file uploaded");
+            return "No file uploaded or file is empty";
         }
-        try {
 
-            // Prepare multipart request for AI server
-            LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-            map.add("file", file.getResource());
+        // 1️⃣ Prepare messages
+        List<Map<String, String>> messages = new ArrayList<>();
+        messages.add(Map.of(
+                "role", "system",
+                "content", "You are a diabetes assistant. Based on file, return AI analysis in strict JSON format."
+        ));
+        messages.add(Map.of(
+                "role", "user",
+                "content", "Analyze this file: " + convertPDFToText(file)
+        ));
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA); // Correct method
+        // 2️⃣ Prepare payload
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("model", "deepseek-chat");
+        payload.put("messages", messages);
 
-            HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
+        // 3️⃣ Prepare headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + DEEPSEEK_API_KEY);
 
-            // Send to AI server (replace with actual AI server URL)
-            RestTemplate restTemplate = new RestTemplate();
-            String aiServerUrl = analisys_url; // Replace with AI server URL
-            ResponseEntity<String> response = restTemplate.exchange(
-                    aiServerUrl,
-                    HttpMethod.POST,
-                    requestEntity,
-                    String.class
-            );
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-            return ResponseEntity.ok(response.getBody());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred: " + e.getMessage());
+        // 4️⃣ Call DeepSeek API
+        ResponseEntity<Map> response = restTemplate.postForEntity(DEEPSEEK_URL, request, Map.class);
+        Map<String, Object> body = response.getBody();
+
+        if (body == null || !body.containsKey("choices")) {
+            throw new RuntimeException("Invalid response from DeepSeek API");
+        }
+
+        List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
+        Map<String, Object> firstChoice = choices.get(0);
+        Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
+
+        Object rawContent = message.get("content");
+        Map<String, Object> analysis;
+
+        if (rawContent instanceof String) {
+            analysis = objectMapper.readValue((String) rawContent, Map.class);
+        } else if (rawContent instanceof Map) {
+            Map<String, Object> contentMap = (Map<String, Object>) rawContent;
+            analysis = (Map<String, Object>) contentMap.get("analysis");
+        } else {
+            throw new RuntimeException("Unexpected content type: " + rawContent.getClass());
+        }
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(analysis);
+    }
+    private String convertPDFToText(MultipartFile file) {
+        try (InputStream inputStream = file.getInputStream()) {
+            byte[] bytes = inputStream.readAllBytes();
+            PDDocument document = Loader.loadPDF(bytes);
+            if (document.isEncrypted()) {
+                System.out.println("PDF is encrypted - cannot extract text");
+            }
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(document);
+            document.close();
+            return text;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public DashBoardData getDashboard(long userId) {
+        public DashBoardData getDashboard(long userId) {
         List<DataEntity> listOfEntries = dataRepository.getDataByUserId(userId).stream().sorted(Comparator.comparing(DataEntity::getMeasurementEntryTime).reversed()).toList();
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
@@ -121,7 +167,6 @@ public class AnalysisService {
 
         return dashBoardData;
     }
-
 
     private String calculateStatus(double sugarValue, String sugarUnit) {
 

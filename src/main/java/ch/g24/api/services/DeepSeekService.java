@@ -1,7 +1,6 @@
 package ch.g24.api.services;
 
 import ch.g24.api.models.DeepSeekResult;
-import ch.g24.api.models.Reading;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -15,8 +14,8 @@ public class DeepSeekService {
 
     @Value("${DEEPSEEK_API_KEY}")
     private String DEEPSEEK_API_KEY;
-
-    private final String DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
+    @Value("${DEEPSEEK_URL}")
+    private String DEEPSEEK_URL;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 

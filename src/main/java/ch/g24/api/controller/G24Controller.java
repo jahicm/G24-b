@@ -26,6 +26,7 @@ public class G24Controller {
     private final AnalysisService analysisService;
     private final DeepSeekService deepSeekService;
 
+
     public G24Controller(UserService userService, DataService dataService, AnalysisService analysisService, DeepSeekService deepSeekService) {
         this.userService = userService;
         this.dataService = dataService;
@@ -49,7 +50,6 @@ public class G24Controller {
         }
     }
 
-
     @PostMapping("/addEntry")
     public ResponseEntity<Map<String, String>> addEntry(@RequestBody Entry entry) {
 
@@ -59,7 +59,6 @@ public class G24Controller {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to add entry"));
         }
-
     }
 
     @GetMapping("/getdata/{userId}")
@@ -73,10 +72,9 @@ public class G24Controller {
         }
     }
 
-    @PostMapping("/getanalisys")
-    public ResponseEntity<String> getanalisys(@RequestParam("file") MultipartFile file) {
-
-        return analysisService.forwardFileToAIServer(file);
+    @PostMapping("/getanalysis")
+    public ResponseEntity<String> getAnalysis(@RequestParam("file") MultipartFile file) throws Exception {
+        return ResponseEntity.ok(analysisService.forwardPdfToDeepSeek(file));
     }
 
     @GetMapping("/dashboard/{userId}")
@@ -96,6 +94,7 @@ public class G24Controller {
 
         return ResponseEntity.ok(dashboard);
     }
+
     public DeepSeekResult analyzePatientData(Map<String, Object> patientData) throws Exception {
         return deepSeekService.getAiAnalysis(patientData);
     }
