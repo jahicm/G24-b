@@ -15,6 +15,9 @@ public class UserEntity {
     private String surname;
     private LocalDate dob;
     private String diabetesType;
+    private String userName;
+    private String password;
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumns({
             @JoinColumn(name = "post_code", referencedColumnName = "postCode"),
@@ -76,5 +79,20 @@ public class UserEntity {
         this.location = location;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
 
