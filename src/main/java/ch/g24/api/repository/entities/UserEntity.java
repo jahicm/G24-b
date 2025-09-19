@@ -10,7 +10,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String userId;
+    private Long userId;
     private String name;
     private String surname;
     private LocalDate dob;
@@ -27,7 +27,7 @@ public class UserEntity {
     private int unitId;
 
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

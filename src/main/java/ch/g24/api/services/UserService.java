@@ -7,6 +7,7 @@ import ch.g24.api.repository.entities.UserEntity;
 import ch.g24.api.repository.persistence.LocationRepository;
 import ch.g24.api.repository.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +18,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, LocationRepository localtionRepository) {
+    public UserService(UserRepository userRepository, LocationRepository localtionRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.locationRepository = localtionRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User getUser(Long userId) {
@@ -31,16 +34,16 @@ public class UserService {
     }
 
     private User mapToUser(UserEntity entity) {
-        return new User(entity.getUserId(), entity.getName(), entity.getSurname(), entity.getDob(),
+        return new User(entity.getName(), entity.getSurname(), entity.getDob(),
                 entity.getDiabetesType(), entity.getLocation().getLocationId().getPostCode(), entity.getLocation().getLocationId().getCity(),
-                entity.getLocation().getCountry(), entity.getUnitId());
+                entity.getLocation().getCountry(), entity.getUnitId(), entity.getUserName(), entity.getPassword());
     }
 
     @Transactional
     public boolean saveUser(User user) {
         try {
 
-            UserEntity existingUser = userRepository.findById(Long.valueOf(user.userId()))
+            UserEntity existingUser = userRepository.findByUserName(user.email())
                     .orElse(null);
 
             UserEntity userEntity;
@@ -50,6 +53,8 @@ public class UserService {
             } else {
                 // Create new user
                 userEntity = new UserEntity();
+                userEntity.setUserName(user.email());
+                userEntity.setPassword(passwordEncoder.encode(user.password()));
             }
 
             // Update user fields

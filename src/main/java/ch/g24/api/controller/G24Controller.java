@@ -50,6 +50,18 @@ public class G24Controller {
         }
     }
 
+    @PostMapping("/first-register")
+    public ResponseEntity<Map<String, String>> first_registerUser(@RequestBody User user) {
+
+        boolean success = userService.saveUser(user);
+        if (success) {
+            return ResponseEntity.ok(Map.of("message", "User successfully registered"));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to register user"));
+        }
+    }
+
     @PostMapping("/addEntry")
     public ResponseEntity<Map<String, String>> addEntry(@RequestBody Entry entry) {
 
