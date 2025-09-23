@@ -3,6 +3,9 @@ package ch.g24.api.repository.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "[USER]")
@@ -17,6 +20,7 @@ public class UserEntity {
     private String diabetesType;
     private String userName;
     private String password;
+    private LocalDateTime dataEntryTime;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumns({
@@ -24,7 +28,8 @@ public class UserEntity {
             @JoinColumn(name = "city", referencedColumnName = "city")
     })
     private LocationEntity location;
-    private int unitId;
+    private String unitId;
+    private String medication;
 
 
     public Long getUserId() {
@@ -63,11 +68,11 @@ public class UserEntity {
         this.diabetesType = diabetesType;
     }
 
-    public void setUnitId(int unitId) {
+    public void setUnitId(String unitId) {
         this.unitId = unitId;
     }
 
-    public int getUnitId() {
+    public String getUnitId() {
         return unitId;
     }
 
@@ -93,6 +98,22 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDateTime getDataEntryTime() {
+        return dataEntryTime;
+    }
+
+    public void setDataEntryTime(LocalDateTime dataEntryTime) {
+        this.dataEntryTime = dataEntryTime;
+    }
+
+    public String getMedication() {
+        return medication;
+    }
+
+    public void setMedication(String medication) {
+        this.medication = medication;
     }
 }
 

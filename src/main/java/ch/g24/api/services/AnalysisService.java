@@ -90,9 +90,10 @@ public class AnalysisService {
 
         Object rawContent = message.get("content");
         Map<String, Object> analysis;
+        String jsonString = rawContent.toString().replaceAll("(?s)^```json\\s*(.*)\\s*```$", "$1").trim();
 
         if (rawContent instanceof String) {
-            analysis = objectMapper.readValue((String) rawContent, Map.class);
+            analysis = objectMapper.readValue((String) jsonString, Map.class);
         } else if (rawContent instanceof Map) {
             Map<String, Object> contentMap = (Map<String, Object>) rawContent;
             analysis = (Map<String, Object>) contentMap.get("analysis");
@@ -146,7 +147,7 @@ public class AnalysisService {
         WeeklyAverage weeklyAverage = new WeeklyAverage();
         double weeklyAverageDoubleRounded = new BigDecimal(weeklyAverageDouble).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
         weeklyAverage.setValue(weeklyAverageDoubleRounded);
-        weeklyAverage.setUnit(SugarUnit.getLabelById(userEntity.getUnitId()));
+        weeklyAverage.setUnit(SugarUnit.getLabelById(Integer.parseInt(userEntity.getUnitId())));
         weeklyAverage.setStatus(calculateStatus(weeklyAverageDouble, weeklyAverage.getUnit()));
         latestReadings.setReading(latestReading);
         latestReadings.setWeeklyAverage(weeklyAverage);

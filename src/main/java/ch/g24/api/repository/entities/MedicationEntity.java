@@ -11,9 +11,6 @@ public class MedicationEntity {
     @Column(name = "MEDICATION_ID")
     private Long medicationId;
 
-    @Column(name = "USER_ID")
-    private Long userId;
-
     @Column(name = "MEDICATION_NAME")
     private String medicationName;
 
@@ -25,14 +22,6 @@ public class MedicationEntity {
         this.medicationId = medicationId;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public String getMedicationName() {
         return medicationName;
     }
@@ -40,5 +29,6 @@ public class MedicationEntity {
     public void setMedicationName(String medicationName) {
         this.medicationName = medicationName;
     }
+
 }
 

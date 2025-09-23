@@ -35,8 +35,8 @@ public class G24Controller {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable("userId") String userId) {
-        return ResponseEntity.ok(userService.getUser(Long.parseLong(userId)));
+    public ResponseEntity<User> getUser(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(userService.getUser(userId));
     }
 
     @PostMapping("/register")
@@ -50,7 +50,7 @@ public class G24Controller {
         }
     }
 
-    @PostMapping("/first-register")
+    @PostMapping("/first-registration")
     public ResponseEntity<Map<String, String>> first_registerUser(@RequestBody User user) {
 
         boolean success = userService.saveUser(user);

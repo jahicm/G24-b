@@ -28,5 +28,11 @@ public enum SugarUnit {
         }
         return null; // or throw exception
     }
+    public static int getIdByLabel(String label) {
+        if(label.equals(MG_DL.getLabel()))
+            return MG_DL.id;
+        else
+            return MMOL_L.id; // or throw exception
+    }
 }
 

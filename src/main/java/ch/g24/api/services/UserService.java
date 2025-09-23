@@ -1,5 +1,6 @@
 package ch.g24.api.services;
 
+import ch.g24.api.enums.SugarUnit;
 import ch.g24.api.models.User;
 import ch.g24.api.repository.entities.LocationEntity;
 import ch.g24.api.repository.entities.LocationId;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 
 @Service
@@ -34,9 +37,9 @@ public class UserService {
     }
 
     private User mapToUser(UserEntity entity) {
-        return new User(entity.getName(), entity.getSurname(), entity.getDob(),
+        return new User(entity.getUserId(),entity.getName(), entity.getSurname(), entity.getDob(),
                 entity.getDiabetesType(), entity.getLocation().getLocationId().getPostCode(), entity.getLocation().getLocationId().getCity(),
-                entity.getLocation().getCountry(), entity.getUnitId(), entity.getUserName(), entity.getPassword());
+                entity.getLocation().getCountry(), SugarUnit.getLabelById(Integer.parseInt(entity.getUnitId())), entity.getUserName(),entity.getMedication(), entity.getPassword(),entity.getDataEntryTime());
     }
 
     @Transactional
@@ -50,21 +53,22 @@ public class UserService {
             if (existingUser != null) {
                 // Update existing user
                 userEntity = existingUser;
+
             } else {
                 // Create new user
                 userEntity = new UserEntity();
                 userEntity.setUserName(user.email());
                 userEntity.setPassword(passwordEncoder.encode(user.password()));
+
             }
 
-            // Update user fields
+            userEntity.setMedication(user.medication());
             userEntity.setName(user.name());
             userEntity.setSurname(user.lastName());
             userEntity.setDiabetesType(user.diabetesType());
             userEntity.setDob(user.dob());
-            userEntity.setUnitId(user.unitId());
-
-            // Handle location
+            userEntity.setUnitId(String.valueOf(SugarUnit.getIdByLabel(user.unit())));
+            userEntity.setDataEntryTime(LocalDateTime.now());
             LocationId locationId = new LocationId();
             locationId.setPostCode(user.postCode());
             locationId.setCity(user.city());

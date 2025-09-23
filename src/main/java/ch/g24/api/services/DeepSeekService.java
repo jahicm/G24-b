@@ -52,11 +52,9 @@ public class DeepSeekService {
         headers.set("Authorization", "Bearer " + DEEPSEEK_API_KEY);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
-
         // 4️⃣ Call DeepSeek API
         ResponseEntity<Map> response = restTemplate.postForEntity(DEEPSEEK_URL, request, Map.class);
         Map<String, Object> body = response.getBody();
-
         // 5️⃣ Extract JSON string safely
         List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
         Map<String, Object> firstChoice = choices.get(0);
@@ -64,7 +62,7 @@ public class DeepSeekService {
         String rawContent = (String) message.get("content");
 
         // 6️⃣ Clean the string: remove backticks and extra whitespace
-        String jsonString = rawContent.replaceAll("^[`\\s]+|[`\\s]+$", "").trim();
+        String jsonString = rawContent.replaceAll("(?s)^```json\\s*(.*)\\s*```$", "$1").trim();
 
         // 7️⃣ Map JSON string to DeepSeekResult DTO
         return objectMapper.readValue(jsonString, DeepSeekResult.class);

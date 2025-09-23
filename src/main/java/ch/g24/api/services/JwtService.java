@@ -1,5 +1,7 @@
 package ch.g24.api.services;
 
+import ch.g24.api.repository.entities.UserEntity;
+import ch.g24.api.repository.persistence.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,12 +22,14 @@ public class JwtService {
 
     private final String secretKey;
     private final long expirationMs;
+    private final UserRepository userRepository;
 
     public JwtService(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration}") long expirationMs) {
+            @Value("${jwt.expiration}") long expirationMs, UserRepository userRepository) {
         this.secretKey = secretKey;
         this.expirationMs = expirationMs;
+        this.userRepository = userRepository;
     }
 
     // 🔹 Extract username (subject)
@@ -41,11 +45,16 @@ public class JwtService {
 
     // 🔹 Generate token without extra claims
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+
+        UserEntity userEntity = userRepository.findByUserName(userDetails.getUsername()).orElseThrow(()->new RuntimeException("User not found"));
+        Map<String,Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId",userEntity.getUserId());
+        return generateToken(extraClaims, userDetails);
     }
 
     // 🔹 Generate token with claims
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
