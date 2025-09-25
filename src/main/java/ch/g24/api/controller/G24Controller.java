@@ -1,10 +1,7 @@
 package ch.g24.api.controller;
 
 import ch.g24.api.models.*;
-import ch.g24.api.services.AnalysisService;
-import ch.g24.api.services.DataService;
-import ch.g24.api.services.DeepSeekService;
-import ch.g24.api.services.UserService;
+import ch.g24.api.services.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +22,14 @@ public class G24Controller {
     private final DataService dataService;
     private final AnalysisService analysisService;
     private final DeepSeekService deepSeekService;
+    private final EmailService emailService;
 
-
-    public G24Controller(UserService userService, DataService dataService, AnalysisService analysisService, DeepSeekService deepSeekService) {
+    public G24Controller(UserService userService, DataService dataService, AnalysisService analysisService, DeepSeekService deepSeekService, EmailService emailService) {
         this.userService = userService;
         this.dataService = dataService;
         this.analysisService = analysisService;
         this.deepSeekService = deepSeekService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/user/{userId}")
@@ -55,6 +53,7 @@ public class G24Controller {
 
         boolean success = userService.saveUser(user);
         if (success) {
+            emailService.sendWelcomeEmail(user.email(), user.password());
             return ResponseEntity.ok(Map.of("message", "User successfully registered"));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -106,7 +105,6 @@ public class G24Controller {
 
         return ResponseEntity.ok(dashboard);
     }
-
     public DeepSeekResult analyzePatientData(Map<String, Object> patientData) throws Exception {
         return deepSeekService.getAiAnalysis(patientData);
     }

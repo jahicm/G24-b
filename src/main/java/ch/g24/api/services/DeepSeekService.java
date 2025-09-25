@@ -32,7 +32,7 @@ public class DeepSeekService {
                         "- ai_analysis.high_readings: object { count: number, threshold: number }\n" +
                         "- ai_analysis.time_analysis: object { best: {range: string, avg_value: number}, worst: {range: string, avg_value: number} }\n" +
                         "- ai_analysis.recommendations: array of strings\n" +
-                        "- ai_analysis.hba1c_prediction: object { value: number, unit: string }\n" +
+                        "- ai_analysis.hba1c_prediction: object { value: n\number, unit: string }\n" +
                         "- smart_insight: object { text: string, translation: string, context: string, priority: string }"
         ));
 

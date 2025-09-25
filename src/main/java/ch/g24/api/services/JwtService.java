@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +53,19 @@ public class JwtService {
         extraClaims.put("userId",userEntity.getUserId());
         return generateToken(extraClaims, userDetails);
     }
+    public String generateResetToken(String email, long expirationMinutes) {
+        long nowMillis = System.currentTimeMillis();
+        long expMillis = nowMillis + expirationMinutes * 60_000;
 
+        System.out.println("Token iat:  " + new Date(nowMillis));
+        System.out.println("Token exp:  " + new Date(expMillis));
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(nowMillis))
+                .setExpiration(new Date(expMillis))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
     // 🔹 Generate token with claims
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
 
