@@ -39,7 +39,7 @@ public class EmailService {
         message.setFrom("no-reply@myapp.com");
         message.setTo(to);
         message.setSubject("G24 password reset");
-        String resetToken = jwtService.generateResetToken(to,30);
+        String resetToken = jwtService.generateResetToken(to);
         System.out.println("Token:"+resetToken);
         String resetLink = "http://localhost:4200/g24/reset-password?token=" + resetToken;
         message.setText("Username:"+to+"\n"+"Your password URL:\n" + resetLink);

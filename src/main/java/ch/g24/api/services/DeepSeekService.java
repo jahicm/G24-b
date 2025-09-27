@@ -64,7 +64,6 @@ public class DeepSeekService {
         // 6️⃣ Clean the string: remove backticks and extra whitespace
         String jsonString = rawContent.replaceAll("(?s)^```json\\s*(.*)\\s*```$", "$1").trim();
 
-        // 7️⃣ Map JSON string to DeepSeekResult DTO
         return objectMapper.readValue(jsonString, DeepSeekResult.class);
     }
 

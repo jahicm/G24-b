@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,7 @@ public class G24Controller {
     @GetMapping("/dashboard/{userId}")
     public ResponseEntity<DashBoardData> getDashboardData(@PathVariable Long userId) throws Exception {
         DashBoardData dashboard = analysisService.getDashboard(userId);
+
         List<Reading> readingList = dashboard.getWeeklyOverview().getReadings();
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(readingList);
@@ -105,6 +107,7 @@ public class G24Controller {
 
         return ResponseEntity.ok(dashboard);
     }
+
     public DeepSeekResult analyzePatientData(Map<String, Object> patientData) throws Exception {
         return deepSeekService.getAiAnalysis(patientData);
     }

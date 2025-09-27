@@ -48,38 +48,37 @@ public class JwtService {
     // 🔹 Generate token without extra claims
     public String generateToken(UserDetails userDetails) {
 
-        UserEntity userEntity = userRepository.findByUserName(userDetails.getUsername()).orElseThrow(()->new RuntimeException("User not found"));
-        Map<String,Object> extraClaims = new HashMap<>();
-        extraClaims.put("userId",userEntity.getUserId());
+        UserEntity userEntity = userRepository.findByUserName(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", userEntity.getUserId());
         return generateToken(extraClaims, userDetails);
     }
-    public String generateResetToken(String email, long expirationMinutes) {
-        long nowMillis = System.currentTimeMillis();
-        long expMillis = nowMillis + expirationMinutes * 60_000;
 
-        System.out.println("Token iat:  " + new Date(nowMillis));
-        System.out.println("Token exp:  " + new Date(expMillis));
+    public String generateResetToken(String email) {
+        long nowMillis = System.currentTimeMillis();
+        long expMillis = nowMillis + expirationMs;
+
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date(nowMillis))
-                .setExpiration(new Date(expMillis))
+                .setExpiration(new Date(nowMillis + expMillis))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
     // 🔹 Generate token with claims
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-
+        long nowMillis = System.currentTimeMillis();
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs)) // 1 hour
+                .setIssuedAt(new Date(nowMillis))
+                .setExpiration(new Date(nowMillis + expirationMs)) // 1 hour
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // 🔹 Validate token
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);

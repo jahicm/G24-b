@@ -1,7 +1,6 @@
 package ch.g24.api.controller;
 
 import ch.g24.api.models.ResetPasswordRequest;
-import ch.g24.api.models.User;
 import ch.g24.api.repository.entities.UserEntity;
 import ch.g24.api.repository.persistence.UserRepository;
 import ch.g24.api.security.AuthRequest;
@@ -17,11 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -60,14 +56,17 @@ public class LoginController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
+    public ResponseEntity<Map<String, String>> forgotPassword(@RequestParam String email) {
 
         emailService.sendPasswordResetEmail(email);
-        return ResponseEntity.ok("Password reset URL sent.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Password reset URL sent.");
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody ResetPasswordRequest request) {
 
         try {
             String newPassword = request.getPassword();
@@ -75,10 +74,11 @@ public class LoginController {
             UserEntity userEntity = userRepository.findByUserName(email).orElseThrow(() -> new RuntimeException("User not retrieved for the password reset"));
             userEntity.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(userEntity);
-
-            return ResponseEntity.ok("Password reset successfully ✅");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Password reset successful");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid or expired token ❌");
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired token ❌"));
         }
 
     }

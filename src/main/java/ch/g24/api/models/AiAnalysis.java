@@ -41,6 +41,30 @@ public class AiAnalysis {
     public void setHbA1cPrediction(HbA1cPrediction hbA1cPrediction) {
         this.hbA1cPrediction = hbA1cPrediction;
     }
+
+    public HighReadings getHighReadings() {
+        return highReadings;
+    }
+
+    public void setHighReadings(HighReadings highReadings) {
+        this.highReadings = highReadings;
+    }
+
+    public List<String> getRecommendations() {
+        return recommendations;
+    }
+
+    public void setRecommendations(List<String> recommendations) {
+        this.recommendations = recommendations;
+    }
+
+    public TimeAnalysis getTimeAnalysis() {
+        return timeAnalysis;
+    }
+
+    public void setTimeAnalysis(TimeAnalysis timeAnalysis) {
+        this.timeAnalysis = timeAnalysis;
+    }
 }
 
 

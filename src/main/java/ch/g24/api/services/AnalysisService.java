@@ -102,6 +102,7 @@ public class AnalysisService {
         }
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(analysis);
     }
+
     private String convertPDFToText(MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
             byte[] bytes = inputStream.readAllBytes();
@@ -118,7 +119,7 @@ public class AnalysisService {
         }
     }
 
-        public DashBoardData getDashboard(long userId) {
+    public DashBoardData getDashboard(long userId) {
         List<DataEntity> listOfEntries = dataRepository.getDataByUserId(userId).stream().sorted(Comparator.comparing(DataEntity::getMeasurementEntryTime).reversed()).toList();
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
@@ -126,9 +127,16 @@ public class AnalysisService {
         DashBoardData dashBoardData = new DashBoardData();
         double weeklyAverageDouble;
 
-        if (listOfEntries.isEmpty())
-            throw new RuntimeException("No Data found");
+        if (listOfEntries.isEmpty()) {
 
+            Reading reading = new Reading();
+            List<Reading> listOfLastWeekReadings = new ArrayList<>();
+            listOfLastWeekReadings.add(reading);
+            WeeklyOverview weeklyOverview = new WeeklyOverview();
+            weeklyOverview.setReadings(listOfLastWeekReadings);
+            dashBoardData.setWeeklyOverview(weeklyOverview);
+            return dashBoardData;
+        }
         List<Reading> listOfReadings = listOfEntries.stream()
                 .map(dataEntity -> {
                     Reading reading = new Reading();
