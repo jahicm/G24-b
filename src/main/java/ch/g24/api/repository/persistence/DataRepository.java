@@ -11,15 +11,14 @@ import java.util.List;
 @Repository
 public interface DataRepository extends JpaRepository<DataEntity, Long> {
 
-    @Query(value = "SELECT d.data_id, d.user_id, d.data_entry_time, " +
-            "d.measurement_entry_time, d.value, d.sugar_value, " +
-            "d.reference_value, d.unit_id, d.status " +
-            "FROM data d " +
-            "INNER JOIN unit u ON d.unit_id = u.unit_id " +
-            "WHERE d.user_id = :userId " +
-            "AND d.measurement_entry_time >= NOW() - INTERVAL '3 months' " +
-            "ORDER BY d.measurement_entry_time ASC",
-            nativeQuery = true)
+    @Query(
+            value = "SELECT  d.DATA_ID,d.USER_ID,d.DATA_ENTRY_TIME, d.MEASUREMENT_ENTRY_TIME, d.VALUE, d.SUGAR_VALUE, " +
+                    "d.REFERENCE_VALUE, u.UNIT_NAME,d.UNIT_ID, d.STATUS " +
+                    "FROM DATA d " +
+                    "INNER JOIN UNIT u ON d.UNIT_ID = u.UNIT_ID " +
+                    "WHERE d.USER_ID = :userId  AND d.MEASUREMENT_ENTRY_TIME >= DATEADD(MONTH, -3, GETDATE()) ORDER BY d.MEASUREMENT_ENTRY_TIME ASC",
+            nativeQuery = true
+    )
     List<DataEntity> getDataByUserId(@Param("userId") Long userId);
 }
 
