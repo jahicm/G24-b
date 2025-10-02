@@ -27,6 +27,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static ch.g24.api.utility.Utility.convertSugar;
+
 
 @Service
 public class AnalysisService {
@@ -41,6 +43,7 @@ public class AnalysisService {
     private final UserRepository userRepository;
     private final String prompt = "Please analyze this lab report and summarize the findings.";
     private final RestTemplate restTemplate = new RestTemplate();
+
 
     public AnalysisService(DataRepository dataRepository, MedicationRepository medicationRepository, UserRepository userRepository) {
         this.dataRepository = dataRepository;
@@ -122,6 +125,7 @@ public class AnalysisService {
     public DashBoardData getDashboard(long userId) {
         List<DataEntity> listOfEntries = dataRepository.getDataByUserId(userId).stream().sorted(Comparator.comparing(DataEntity::getMeasurementEntryTime).reversed()).toList();
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        String unitId = userEntity.getUnitId();
 
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
         DashBoardData dashBoardData = new DashBoardData();
@@ -149,7 +153,23 @@ public class AnalysisService {
                 .toList();
 
         Reading latestReading = listOfReadings.getFirst();
-        List<Reading> listOfLastWeekReadings = listOfReadings.stream().filter(a -> LocalDateTime.parse(a.getDate()).isAfter(oneWeekAgo)).toList();
+        double latestVal = convertSugar(latestReading.getSugarValue(), unitId, latestReading.getUnit());
+        latestReading.setSugarValue(latestVal);
+        latestReading.setUnit(SugarUnit.getLabelById(Integer.parseInt(unitId)));
+
+        List<Reading> listOfLastWeekReadings = listOfReadings.stream()
+                .filter(r -> LocalDateTime.parse(r.getDate()).isAfter(oneWeekAgo))
+                .map(r -> {
+                    String unit = r.getUnit();
+                    double val = convertSugar(r.getSugarValue(), unitId, unit);
+                    Reading reading = new Reading();
+                    reading.setUnit(unit);
+                    reading.setDate(r.getDate());
+                    reading.setSugarValue(val);
+                    return reading;
+                })
+                .toList();
+
         weeklyAverageDouble = listOfLastWeekReadings.stream().mapToDouble(Reading::getSugarValue).average().orElse(0.0);
         LatestReadings latestReadings = new LatestReadings();
         WeeklyAverage weeklyAverage = new WeeklyAverage();
@@ -184,9 +204,9 @@ public class AnalysisService {
 
                 if (sugarValue < 3.9) {
                     return "low";
-                } else if (sugarValue >= 3.9 && sugarValue <= 5.5) {
+                } else if (sugarValue >= 3.9 && sugarValue <= 7.0) {
                     return "normal";
-                } else if (sugarValue >= 5.6 && sugarValue <= 6.9) {
+                } else if (sugarValue >= 7.1 && sugarValue <= 10) {
                     return "elevated";
                 } else {
                     return "high";
@@ -195,9 +215,9 @@ public class AnalysisService {
 
                 if (sugarValue < 70) {
                     return "low";
-                } else if (sugarValue >= 70 && sugarValue <= 99) {
+                } else if (sugarValue >= 70 && sugarValue <= 130) {
                     return "normal";
-                } else if (sugarValue >= 100 && sugarValue <= 125) {
+                } else if (sugarValue >= 131 && sugarValue <= 179) {
                     return "elevated";
                 } else {
                     return "high";
