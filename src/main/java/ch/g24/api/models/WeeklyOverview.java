@@ -26,5 +26,8 @@ public class WeeklyOverview {
     public void setTimeRange(TimeRange timeRange) {
         this.timeRange = timeRange;
     }
+
+    public static interface IData {
+    }
 }
 

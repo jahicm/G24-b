@@ -2,7 +2,7 @@ package ch.g24.api.models;
 
 import java.time.LocalDateTime;
 
-public class Data {
+public class Data{
 
     private Long dataId;
     private Long userId;
@@ -84,5 +84,7 @@ public class Data {
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 
 }
