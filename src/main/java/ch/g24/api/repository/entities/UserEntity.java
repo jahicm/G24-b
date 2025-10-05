@@ -29,8 +29,12 @@ public class UserEntity {
     })
     private LocationEntity location;
     private String unitId;
-    private String medication;
+    @Column(name="medication_id")
+    private Long medicationId;
 
+    @OneToOne
+    @JoinColumn(name = "medication_id", insertable = false, updatable = false)
+    private MedicationEntity medication;
 
     public Long getUserId() {
         return userId;
@@ -108,12 +112,20 @@ public class UserEntity {
         this.dataEntryTime = dataEntryTime;
     }
 
-    public String getMedication() {
+    public MedicationEntity getMedication() {
         return medication;
     }
 
-    public void setMedication(String medication) {
+    public void setMedication(MedicationEntity medication) {
         this.medication = medication;
+    }
+
+    public Long getMedicationId() {
+        return medicationId;
+    }
+
+    public void setMedicationId(Long medicationId) {
+        this.medicationId = medicationId;
     }
 }
 

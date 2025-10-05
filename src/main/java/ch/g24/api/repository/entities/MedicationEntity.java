@@ -14,6 +14,9 @@ public class MedicationEntity {
     @Column(name = "MEDICATION_NAME")
     private String medicationName;
 
+    @OneToOne(mappedBy = "medication")
+    private UserEntity user;
+
     public Long getMedicationId() {
         return medicationId;
     }

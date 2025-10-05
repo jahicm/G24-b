@@ -1,6 +1,8 @@
 package ch.g24.api.models;
 
 public class Medication {
+
+    private long medicationId;
     private String name;
     private String type;
     private String dosage;
@@ -18,5 +20,13 @@ public class Medication {
 
     public String getFrequency() { return frequency; }
     public void setFrequency(String frequency) { this.frequency = frequency; }
+
+    public long getMedicationId() {
+        return medicationId;
+    }
+
+    public void setMedicationId(long medicationId) {
+        this.medicationId = medicationId;
+    }
 }
 

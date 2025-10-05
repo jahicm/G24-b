@@ -1,5 +1,6 @@
 package ch.g24.api.services;
 
+import ch.g24.api.enums.Medication;
 import ch.g24.api.enums.SugarUnit;
 import ch.g24.api.models.User;
 import ch.g24.api.repository.entities.LocationEntity;
@@ -39,7 +40,7 @@ public class UserService {
     private User mapToUser(UserEntity entity) {
         return new User(entity.getUserId(),entity.getName(), entity.getSurname(), entity.getDob(),
                 entity.getDiabetesType(), entity.getLocation().getLocationId().getPostCode(), entity.getLocation().getLocationId().getCity(),
-                entity.getLocation().getCountry(), SugarUnit.getLabelById(Integer.parseInt(entity.getUnitId())), entity.getUserName(),entity.getMedication(), entity.getPassword(),entity.getDataEntryTime());
+                entity.getLocation().getCountry(), SugarUnit.getLabelById(Integer.parseInt(entity.getUnitId())), entity.getUserName(),entity.getMedication().getMedicationName(), entity.getPassword(),entity.getDataEntryTime());
     }
 
     @Transactional
@@ -59,10 +60,8 @@ public class UserService {
                 userEntity = new UserEntity();
                 userEntity.setUserName(user.email());
                 userEntity.setPassword(passwordEncoder.encode(user.password()));
-
             }
-
-            userEntity.setMedication(user.medication());
+            userEntity.setMedicationId(Medication.getMedicationIdByName(user.medication()));
             userEntity.setName(user.name());
             userEntity.setSurname(user.lastName());
             userEntity.setDiabetesType(user.diabetesType());

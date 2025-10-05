@@ -184,15 +184,16 @@ public class AnalysisService {
         dashBoardData.setLatestReadings(latestReadings);
         dashBoardData.setWeeklyOverview(weeklyOverview);
 
-        List<MedicationEntity> medicationEntityList = medicationRepository.findAllMedicationsByUserId(userId);
-        List<Medication> listOfMedications = medicationEntityList.stream().map(medEntity ->
-        {
+        Optional<MedicationEntity> medicationEntity = medicationRepository.findAllMedicationsByUserId(userId);
+        List<Medication> medications = new ArrayList<>();
+        medicationEntity.ifPresent(m -> {
             Medication medication = new Medication();
-            medication.setName(medEntity.getMedicationName());
-            return medication;
-        }).toList();
+            medication.setMedicationId(medicationEntity.get().getMedicationId());
+            medication.setName(medicationEntity.get().getMedicationName());
+            medications.add(medication);
+        });
 
-        dashBoardData.setMedications(listOfMedications);
+        dashBoardData.setMedications(medications);
 
         return dashBoardData;
     }

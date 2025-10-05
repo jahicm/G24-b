@@ -4,5 +4,5 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record User(Long userId, String name, String lastName, LocalDate dob, String diabetesType, String postCode,
-                   String city, String country, String unit, String email,String medication, String password, LocalDateTime dataEntryTime) {
+                   String city, String country, String unit, String email, String medication, String password, LocalDateTime dataEntryTime) {
 }
