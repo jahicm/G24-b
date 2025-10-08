@@ -2,6 +2,8 @@ package ch.g24.api.repository.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "MEDICATION")
 public class MedicationEntity {
@@ -14,8 +16,8 @@ public class MedicationEntity {
     @Column(name = "MEDICATION_NAME")
     private String medicationName;
 
-    @OneToOne(mappedBy = "medication")
-    private UserEntity user;
+    @OneToMany(mappedBy = "medication")
+    private List<UserEntity> users;
 
     public Long getMedicationId() {
         return medicationId;
@@ -33,5 +35,12 @@ public class MedicationEntity {
         this.medicationName = medicationName;
     }
 
+    public List<UserEntity> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserEntity> users) {
+        this.users = users;
+    }
 }
 

@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +104,17 @@ public class G24Controller {
         dashboard.setSmartInsight(deepSeekResult.getSmart_insight());
 
         return ResponseEntity.ok(dashboard);
+    }
+
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<Boolean> deleteProfile(@PathVariable("userId") String userId) {
+        boolean isDeleted = userService.deleteProfile(userId);
+
+        if (isDeleted) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
     }
 
     public DeepSeekResult analyzePatientData(Map<String, Object> patientData) throws Exception {

@@ -28,4 +28,5 @@ public class LocationEntity {
         return country;
     }
 
+
 }

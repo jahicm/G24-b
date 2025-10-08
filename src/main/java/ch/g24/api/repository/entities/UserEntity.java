@@ -32,7 +32,7 @@ public class UserEntity {
     @Column(name="medication_id")
     private Long medicationId;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medication_id", insertable = false, updatable = false)
     private MedicationEntity medication;
 
@@ -127,5 +127,6 @@ public class UserEntity {
     public void setMedicationId(Long medicationId) {
         this.medicationId = medicationId;
     }
+
 }
 

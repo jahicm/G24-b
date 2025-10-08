@@ -22,10 +22,10 @@ public class DataService {
     private final DataRepository dataRepository;
     private final UserRepository userRepository;
     private final UnitRepository unitRepository;
-    private static final String VAL_POST_MEAL_PLUS_2 = "Post-Meal-2-hours-after";
-    private static final String VAL_POST_MEAL_PLUS_1 = "Post-Meal-1-hour-after";
-    private static final String VAL_FASTING = "Fasting";
-    private static final String RANDOM = "Random";
+    private static final String VAL_POST_MEAL_PLUS_2 = "post_meal_2hrs_after";
+    private static final String VAL_POST_MEAL_PLUS_1 = "post_meal_1hr_after";
+    private static final String VAL_FASTING = "fasting";
+    private static final String RANDOM = "random";
 
     @Autowired
     public DataService(DataRepository dataRepository, UserRepository userRepository, UnitRepository unitRepository) {
