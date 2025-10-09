@@ -44,7 +44,7 @@ public class UserService {
     private User mapToUser(UserEntity entity) {
         return new User(entity.getUserId(), entity.getName(), entity.getSurname(), entity.getDob(),
                 entity.getDiabetesType(), entity.getLocation().getLocationId().getPostCode(), entity.getLocation().getLocationId().getCity(),
-                entity.getLocation().getCountry(), SugarUnit.getLabelById(Integer.parseInt(entity.getUnitId())), entity.getUserName(), entity.getMedication().getMedicationName(), entity.getPassword(), entity.getDataEntryTime());
+                entity.getLocation().getCountry(), entity.getUnitId(), entity.getUserName(), entity.getMedication().getMedicationName(), entity.getPassword(), entity.getDataEntryTime());
     }
 
     @Transactional
@@ -70,7 +70,7 @@ public class UserService {
             userEntity.setSurname(user.lastName());
             userEntity.setDiabetesType(user.diabetesType());
             userEntity.setDob(user.dob());
-            userEntity.setUnitId(user.unit());
+            userEntity.setUnitId(String.valueOf(user.unit()));
             userEntity.setDataEntryTime(LocalDateTime.now());
             LocationId locationId = new LocationId();
             locationId.setPostCode(user.postCode());

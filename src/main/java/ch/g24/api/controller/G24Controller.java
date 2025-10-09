@@ -88,7 +88,7 @@ public class G24Controller {
     }
 
     @GetMapping("/dashboard/{userId}")
-    public ResponseEntity<DashBoardData> getDashboardData(@PathVariable Long userId) throws Exception {
+    public ResponseEntity<DashBoardData> getDashboardData(@PathVariable Long userId,@RequestHeader(value = "Accept-Language", defaultValue = "en") String lang) throws Exception {
         DashBoardData dashboard = analysisService.getDashboard(userId);
 
         List<Reading> readingList = dashboard.getWeeklyOverview().getReadings();
@@ -96,6 +96,7 @@ public class G24Controller {
         String json = mapper.writeValueAsString(readingList);
         Map<String, Object> map = new HashMap<>();
         map.put("readings", json);
+        map.put("lang",lang);
         DeepSeekResult deepSeekResult = analyzePatientData(map);
         AiAnalysis aiAnalysis = new AiAnalysis();
         aiAnalysis.setHbA1cPrediction(deepSeekResult.getAi_analysis().getHbA1cPrediction());

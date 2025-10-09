@@ -145,7 +145,7 @@ public class AnalysisService {
                 .map(dataEntity -> {
                     Reading reading = new Reading();
                     reading.setDate(dataEntity.getMeasurementEntryTime().toString());
-                    reading.setUnit(dataEntity.getUnit().getUnitName());
+                    reading.setUnit(SugarUnit.getLabelById(String.valueOf(dataEntity.getUnit().getUnitId())));
                     reading.setSugarValue(dataEntity.getSugarValue());
                     reading.setContext(dataEntity.getValue());
                     return reading;
@@ -155,7 +155,7 @@ public class AnalysisService {
         Reading latestReading = listOfReadings.getFirst();
         double latestVal = convertSugar(latestReading.getSugarValue(), unitId, latestReading.getUnit());
         latestReading.setSugarValue(latestVal);
-        latestReading.setUnit(SugarUnit.getLabelById(Integer.parseInt(unitId)));
+        latestReading.setUnit(SugarUnit.getLabelById(unitId));
 
         List<Reading> listOfLastWeekReadings = listOfReadings.stream()
                 .filter(r -> LocalDateTime.parse(r.getDate()).isAfter(oneWeekAgo))
@@ -175,7 +175,7 @@ public class AnalysisService {
         WeeklyAverage weeklyAverage = new WeeklyAverage();
         double weeklyAverageDoubleRounded = new BigDecimal(weeklyAverageDouble).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
         weeklyAverage.setValue(weeklyAverageDoubleRounded);
-        weeklyAverage.setUnit(SugarUnit.getLabelById(Integer.parseInt(userEntity.getUnitId())));
+        weeklyAverage.setUnit(SugarUnit.getLabelById(userEntity.getUnitId()));
         weeklyAverage.setStatus(calculateStatus(weeklyAverageDouble, weeklyAverage.getUnit()));
         latestReadings.setReading(latestReading);
         latestReadings.setWeeklyAverage(weeklyAverage);

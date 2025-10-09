@@ -23,17 +23,31 @@ public class DeepSeekService {
     public DeepSeekResult getAiAnalysis(Map<String, Object> patientData) throws Exception {
 
         List<Map<String, String>> messages = new ArrayList<>();
+        String language = (String) patientData.get("lang");
         messages.add(Map.of(
                 "role", "system",
-                "content",
-                "You are a diabetes assistant. Based on glucoseData (last 90 days), return AI analysis and smart insights in strict JSON format. " +
-                        "Return the following JSON structure only, no extra text, no markdown, no backticks:\n" +
-                        "- ai_analysis.summary: object { weekly_avg: number, unit: string, trend: string }\n" +
-                        "- ai_analysis.high_readings: object { count: number, threshold: number }\n" +
-                        "- ai_analysis.time_analysis: object { best: {range: string, avg_value: number}, worst: {range: string, avg_value: number} }\n" +
-                        "- ai_analysis.recommendations: array of strings\n" +
-                        "- ai_analysis.hba1c_prediction: object { value: n\number, unit: string }\n" +
-                        "- smart_insight: object { text: string, translation: string, context: string, priority: string }"
+                "content", """
+            You are a diabetes assistant. Based on glucoseData (last 90 days),
+            return AI analysis and smart insights in strict JSON format.
+
+            Return the following JSON structure only — no extra text, no markdown, no backticks:
+            - ai_analysis.summary: object { weekly_avg: number, unit: string, trend: string }
+            - ai_analysis.high_readings: object { count: number, threshold: number }
+            - ai_analysis.time_analysis: object {
+                best: { range: string, avg_value: number },
+                worst: { range: string, avg_value: number }
+              }
+            - ai_analysis.recommendations: array of strings
+            - ai_analysis.hba1c_prediction: object { value: number, unit: string }
+            - smart_insight: object {
+                text: string,
+                translation: string,
+                context: string,
+                priority: string
+              }
+
+            Write the output in the following language: %s.
+            """.formatted(language)
         ));
 
         messages.add(Map.of(

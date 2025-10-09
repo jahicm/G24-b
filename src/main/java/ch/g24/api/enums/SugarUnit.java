@@ -1,18 +1,18 @@
 package ch.g24.api.enums;
 
 public enum SugarUnit {
-    MG_DL(1, "mg/dL"),
-    MMOL_L(2, "mmol/L");
+    MG_DL("1", "mg/dL"),
+    MMOL_L("2", "mmol/L");
 
-    private final int id;
+    private final String id;
     private final String label;
 
-    SugarUnit(int id, String label) {
+    SugarUnit(String id, String label) {
         this.id = id;
         this.label = label;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -20,15 +20,15 @@ public enum SugarUnit {
         return label;
     }
 
-    public static String getLabelById(int id) {
+    public static String getLabelById(String id) {
         for (SugarUnit unit : values()) {
-            if (unit.getId() == id) {
+            if (unit.getId().equals(id)) {
                 return unit.getLabel();
             }
         }
         return null; // or throw exception
     }
-    public static int getIdByLabel(String label) {
+    public static String getIdByLabel(String label) {
         if(label.equals(MG_DL.getLabel()))
             return MG_DL.id;
         else

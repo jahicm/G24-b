@@ -10,10 +10,10 @@ public class Utility {
 
     public static double convertSugar(double val, String unitId, String unit) {
 
-        if (unit.equals((SugarUnit.getLabelById(Integer.parseInt(unitId))))) {
+        if (unit.equals((SugarUnit.getLabelById(unitId)))) {
             return val; // no conversion needed
         }
-        if (!unit.equals(SugarUnit.getLabelById(Integer.parseInt(unitId)))) {
+        if (!unit.equals(SugarUnit.getLabelById(unitId))) {
             if (unitId.equals(UNIT_MGDL)) { // convert to mg/dL
                 val = val * 18.0;
                 return Math.round(val);
