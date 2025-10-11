@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +55,7 @@ public class G24Controller {
 
         boolean success = userService.saveUser(user);
         if (success) {
-            emailService.sendWelcomeEmail(user.email(), user.password());
+            emailService.sendWelcomeEmail(user.name());
             return ResponseEntity.ok(Map.of("message", "User successfully registered"));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

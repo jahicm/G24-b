@@ -58,6 +58,7 @@ public class LoginController {
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(@RequestParam String email) {
 
+        UserEntity userEntity = userRepository.findByUserName(email).orElseThrow(() -> new RuntimeException("Failed to find user"));
         emailService.sendPasswordResetEmail(email);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Password reset URL sent.");
