@@ -13,7 +13,6 @@ import ch.g24.api.repository.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -52,7 +51,7 @@ public class DataService {
             dataRepository.save(dataEntity);
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace(); // Use for debugging
+            System.err.println("Error adding entry: " + ex.getMessage());
             return false;
         }
     }

@@ -36,6 +36,10 @@ public class UserEntity {
     @JoinColumn(name = "medication_id", insertable = false, updatable = false)
     private MedicationEntity medication;
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public Long getUserId() {
         return userId;
     }

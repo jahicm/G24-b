@@ -1,7 +1,6 @@
 package ch.g24.api.services;
 
 import ch.g24.api.enums.Medication;
-import ch.g24.api.enums.SugarUnit;
 import ch.g24.api.models.User;
 import ch.g24.api.repository.entities.LocationEntity;
 import ch.g24.api.repository.entities.LocationId;
@@ -28,9 +27,9 @@ public class UserService {
     private final DataRepository dataRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, LocationRepository localtionRepository, PasswordEncoder passwordEncoder, DataRepository dataRepository) {
+    public UserService(UserRepository userRepository, LocationRepository locationRepository, PasswordEncoder passwordEncoder, DataRepository dataRepository) {
         this.userRepository = userRepository;
-        this.locationRepository = localtionRepository;
+        this.locationRepository = locationRepository;
         this.passwordEncoder = passwordEncoder;
         this.dataRepository = dataRepository;
     }
