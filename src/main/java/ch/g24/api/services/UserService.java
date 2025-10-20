@@ -47,11 +47,13 @@ public class UserService {
     }
 
     @Transactional
-    public boolean saveUser(User user) {
+    public boolean saveUser(User user,boolean isFirstTime) {
         try {
 
             UserEntity existingUser = userRepository.findByUserName(user.email())
                     .orElse(null);
+            if(isFirstTime && existingUser != null)
+               return false;
 
             UserEntity userEntity;
             if (existingUser != null) {

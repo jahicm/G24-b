@@ -27,7 +27,6 @@ public class EmailService {
 
     public void sendWelcomeEmail(String name) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("no-reply@myapp.com");
         message.setTo(name);
         message.setSubject("Welcome to 24 🎉");
         message.setText("Hello " + name + ",\n\nWelcome to G24! We're glad to have you 🚀.\n"+
@@ -35,13 +34,12 @@ public class EmailService {
         "Bonjour " + name + ",\n\nBienvenue sur G24 ! Nous sommes ravis de vous accueillir 🚀.\n"+
         "Ciao " + name + ",\n\nBenvenuto su G24! Siamo felici di averti con noi 🚀.");
 
-
         mailSender.send(message);
     }
 
     public void sendPasswordResetEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("no-reply@myapp.com");
+
         message.setTo(to);
         message.setSubject("G24 password reset");
         String resetToken = jwtService.generateResetToken(to);

@@ -41,6 +41,7 @@ class UserServiceTest {
     private UserService userService;
 
     private User testUser;
+    private Optional<UserEntity> testUser2;
 
     @BeforeEach
     void setup() {
@@ -59,6 +60,10 @@ class UserServiceTest {
                 "password123",
                 LocalDateTime.now()
         );
+
+        testUser2 = Optional.of(new UserEntity());
+
+
     }
 
     @Test
@@ -71,14 +76,26 @@ class UserServiceTest {
         when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        boolean result = userService.saveUser(testUser);
+        boolean result = userService.saveUser(testUser,true);
 
         // Assert
         assertTrue(result);
         verify(userRepository).save(any(UserEntity.class));
         verify(passwordEncoder).encode("password123");
     }
+    @Test
+    void saveUser_createsNewUserFailed() {
+        // Arrange
+        when(userRepository.findByUserName(testUser.email())).thenReturn(testUser2);
 
+
+        // Act
+        boolean result = userService.saveUser(testUser,true);
+
+        // Assert
+        assertFalse(result);
+        verify(userRepository, never()).save(any(UserEntity.class));
+    }
     @Test
     void saveUser_updatesExistingUser() {
         // Arrange
@@ -90,7 +107,7 @@ class UserServiceTest {
         when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        boolean result = userService.saveUser(testUser);
+        boolean result = userService.saveUser(testUser,false);
 
         // Assert
         assertTrue(result);

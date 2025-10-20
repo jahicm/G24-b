@@ -1,14 +1,14 @@
-# Use lightweight Alpine with OpenJDK 17
-FROM openjdk:17-alpine
+# Use Java 24 runtime
+FROM eclipse-temurin:24-jdk-alpine
 
-# Set working directory inside container
+# Set the working directory
 WORKDIR /app
 
-# Copy your fat JAR into the container
+# Copy the JAR file
 COPY target/g24-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose port your Spring Boot app runs on (default 8080)
+# Expose the application's port
 EXPOSE 8080
 
-# Run the app
-ENTRYPOINT ["java","-jar","app.jar"]
+# Run the application
+ENTRYPOINT ["java", "-Dlogging.file.name=/app/logs/g24.log", "-jar", "app.jar"]

@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,24 +39,24 @@ public class G24Controller {
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
-        boolean success = userService.saveUser(user);
+        boolean success = userService.saveUser(user,false);
         if (success) {
-            return ResponseEntity.ok(Map.of("message", "User successfully registered"));
+            return ResponseEntity.ok(Map.of("message", "User successfully updated"));
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Failed to register user"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Failed to updated user"));
         }
     }
 
     @PostMapping("/first-registration")
     public ResponseEntity<Map<String, String>> first_registerUser(@RequestBody User user) {
 
-        boolean success = userService.saveUser(user);
+        boolean success = userService.saveUser(user,true);
         if (success) {
-            emailService.sendWelcomeEmail(user.name());
+            emailService.sendWelcomeEmail(user.email());
             return ResponseEntity.ok(Map.of("message", "User successfully registered"));
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", "Failed to register user"));
         }
     }
@@ -70,7 +68,7 @@ public class G24Controller {
         if (isAdded) {
             return ResponseEntity.ok(Map.of("message", "Entry successfully added"));
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to add entry"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Failed to add entry"));
         }
     }
 
@@ -117,7 +115,7 @@ public class G24Controller {
         if (isDeleted) {
             return ResponseEntity.ok(true);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
         }
     }
 
