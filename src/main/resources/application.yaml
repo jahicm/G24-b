@@ -1,0 +1,62 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /g24
+spring:
+  application:
+    name: g24
+  datasource:
+    url: '${SPRING_DATASOURCE_URL}'
+    username: '${SPRING_DATASOURCE_USERNAME}'
+    password: '${SPRING_DATASOURCE_PASSWORD}'
+    driver-class-name: org.postgresql.Driver
+    initialization-mode: always
+    hikari:
+      maxLifetime: 700000
+      maximumPoolSize: 10
+      connectionTimeout: 30000
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: false
+      hibernate:
+        ddl-auto: none
+      properties:
+        hibernate:
+          format_sql: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mail:
+    host: '${SPRING_SMTP_HOST}'
+    port: '${SPRING_SMTP_PORT}'
+    username: '${SPRING_MAIL_USERNAME}'
+    password: '${SPRING_MAIL_PASSWORD}'
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: false
+    from: '${SPRING_MAIL_FROM}'
+logging:
+  file:
+    name: /app/logs/g24.log
+    max-size: 10MB
+  level:
+    root: INFO
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: 'health,info'
+DEEPSEEK_URL: '${DEEPSEEK_URL}'
+DEEPSEEK_API_KEY: '${DEEPSEEK_API_KEY}'
+jwt:
+  secret: '${JWT_SECRET}'
+  expiration: '${JWT_EXPIRATION}'

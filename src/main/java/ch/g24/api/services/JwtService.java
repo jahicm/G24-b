@@ -7,13 +7,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +25,7 @@ public class JwtService {
     private final String secretKey;
     private final long expirationMs;
     private final UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     public JwtService(
             @Value("${jwt.secret}") String secretKey,
@@ -55,14 +56,18 @@ public class JwtService {
     }
 
     public String generateResetToken(String email) {
-        long nowMillis = System.currentTimeMillis();
-        long expMillis = nowMillis + expirationMs;
+        long nowMillis = System.currentTimeMillis();           // Aktuelle Zeit in ms (UTC)
+        long expMillis = nowMillis + expirationMs;             // Ablaufzeit berechnen
 
+        Date issuedAt = new Date(nowMillis);
+        Date expiration = new Date(expMillis);
+        logger.info("Generating reset token for {} | issuedAt={} | expiresAt={}",
+                email, issuedAt, expiration);
         return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(new Date(nowMillis))
-                .setExpiration(new Date(nowMillis + expMillis))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .setSubject(email)                              // E-Mail als Subject
+                .setIssuedAt(new Date(nowMillis))              // Token-Ausstellungszeit
+                .setExpiration(new Date(expMillis))            // Token-Ablaufzeit
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)  // Signierung
                 .compact();
     }
 

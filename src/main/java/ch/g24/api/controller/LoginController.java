@@ -6,6 +6,8 @@ import ch.g24.api.repository.persistence.UserRepository;
 import ch.g24.api.security.AuthRequest;
 import ch.g24.api.services.EmailService;
 import ch.g24.api.services.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +31,7 @@ public class LoginController {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, EmailService emailService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
@@ -70,6 +73,7 @@ public class LoginController {
     public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody ResetPasswordRequest request) {
 
         try {
+            logger.info("Incoming token: "+request.getToken());
             String newPassword = request.getPassword();
             String email = jwtService.extractUsername(request.getToken());
             UserEntity userEntity = userRepository.findByUserName(email).orElseThrow(() -> new RuntimeException("User not retrieved for the password reset"));

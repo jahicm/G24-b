@@ -1,50 +1,44 @@
 package ch.g24.api.services;
 
-import ch.g24.api.repository.entities.UserEntity;
-import ch.g24.api.repository.persistence.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class EmailService {
 
 
     private final JavaMailSender mailSender;
-    private final UserRepository userRepository;
     private final JwtService jwtService;
-    private Optional<UserEntity> user;
+    private final String springEmailFrom;
 
-
-    public EmailService(JavaMailSender mailSender, UserRepository userRepository, JwtService jwtService) {
+    public EmailService(JavaMailSender mailSender, JwtService jwtService, @Value("${spring.mail.from}") String springEmailFrom) {
         this.mailSender = mailSender;
-        this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.springEmailFrom = springEmailFrom;
     }
-
-    public void sendWelcomeEmail(String name) {
+    public void sendWelcomeEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(name);
-        message.setSubject("Welcome to 24 🎉");
-        message.setText("Hello " + name + ",\n\nWelcome to G24! We're glad to have you 🚀.\n"+
-        "Hallo " + name + ",\n\nWillkommen bei G24! Wir freuen uns, dass du dabei bist 🚀.\n"+
-        "Bonjour " + name + ",\n\nBienvenue sur G24 ! Nous sommes ravis de vous accueillir 🚀.\n"+
-        "Ciao " + name + ",\n\nBenvenuto su G24! Siamo felici di averti con noi 🚀.");
+        message.setFrom(springEmailFrom);
+        message.setTo(to);
+        message.setSubject("Welcome to G24 🎉,Willkommen bei G24 🎉,Bienvenue sur G24 🎉,Benvenuto su G24 🎉");
+        message.setText("Hello " + to + ",\n\nWelcome to G24! We're glad to have you 🚀.\n"+
+        "Hallo " + to + ",\n\nWillkommen bei G24! Wir freuen uns, dass du dabei bist 🚀.\n"+
+        "Bonjour " + to + ",\n\nBienvenue sur G24 ! Nous sommes ravis de vous accueillir 🚀.\n"+
+        "Ciao " + to + ",\n\nBenvenuto su G24! Siamo felici di averti con noi 🚀.");
 
         mailSender.send(message);
     }
 
     public void sendPasswordResetEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
-
+        message.setFrom(springEmailFrom);
         message.setTo(to);
         message.setSubject("G24 password reset");
         String resetToken = jwtService.generateResetToken(to);
-        System.out.println("Token:"+resetToken);
-        String resetLink = "http://localhost:4200/g24/reset-password?token=" + resetToken;
+
+        String resetLink = "https://g24-frontend.ashyhill-9796b5b9.westeurope.azurecontainerapps.io/g24/reset-password?token=" + resetToken;
         message.setText("Username:"+to+"\n"+"Password URL:\n" + resetLink+"\n"+" Please use this link to reset your password within 1 hour.\n"
         +"\" Bitte verwenden Sie diesen Link, um Ihr Passwort innerhalb von 1 Stunde zurückzusetzen.\n"
         +"\" Veuillez utiliser ce lien pour réinitialiser votre mot de passe dans l'heure qui suit.\n"

@@ -1,0 +1,58 @@
+spring:
+  profiles:
+    active: test
+  application:
+    name: g24
+  datasource:
+    url: 'jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
+    username: sa
+    password: null
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximumPoolSize: 5
+      connectionTimeout: 30000
+    jpa:
+      database-platform: org.hibernate.dialect.H2Dialect
+      hibernate:
+        ddl-auto: create-drop
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+  servlet:
+    multipart:
+      enabled: false
+  mail:
+    host: localhost
+    port: 2525
+    username: null
+    password: null
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+    from: test@g24.local
+server:
+  port: 0
+  servlet:
+    context-path: /g24
+jwt:
+  secret: test_secret
+  expiration: 2000
+logging:
+  level:
+    root: INFO
+  file:
+    name: logs/g24-test.log
+    max-size: 10MB
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: 'health,info'
