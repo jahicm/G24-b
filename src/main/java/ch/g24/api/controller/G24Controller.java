@@ -83,9 +83,9 @@ public class G24Controller {
         }
     }
 
-    @PostMapping("/getanalysis")
-    public ResponseEntity<String> getAnalysis(@RequestParam("file") MultipartFile file) throws Exception {
-        return ResponseEntity.ok(analysisService.forwardPdfToDeepSeek(file));
+    @PostMapping(path = "/getanalysis", produces = "text/plain")
+    public ResponseEntity<String> getAnalysis(@RequestParam("file") MultipartFile file, @RequestParam(name = "language", defaultValue = "en") String language) throws Exception {
+        return ResponseEntity.ok(analysisService.forwardPdfToDeepSeek(file,language));
     }
 
     @GetMapping("/dashboard/{userId}")

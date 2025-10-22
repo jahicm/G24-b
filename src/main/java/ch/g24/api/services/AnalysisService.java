@@ -51,16 +51,17 @@ public class AnalysisService {
         this.userRepository = userRepository;
     }
 
-    public String forwardPdfToDeepSeek(MultipartFile file) throws Exception {
+    public String forwardPdfToDeepSeek(MultipartFile file,String language) throws Exception {
         if (file == null || file.isEmpty()) {
             return "No file uploaded or file is empty";
         }
-
+        if(language.equals("it"))
+            language = "italian";
         // 1️⃣ Prepare messages
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of(
                 "role", "system",
-                "content", "You are a diabetes assistant. Based on file, return AI analysis in strict JSON format."
+                "content", "You are a diabetes assistant. Based on file, return AI analysis in strict JSON format.The response should be in " + language + "."
         ));
         messages.add(Map.of(
                 "role", "user",
