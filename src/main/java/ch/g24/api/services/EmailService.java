@@ -12,15 +12,18 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final JwtService jwtService;
     private final String springEmailFrom;
+    private final String emailCC;
 
-    public EmailService(JavaMailSender mailSender, JwtService jwtService, @Value("${spring.mail.from}") String springEmailFrom) {
+    public EmailService(JavaMailSender mailSender, JwtService jwtService, @Value("${spring.mail.from}") String springEmailFrom, @Value("${spring.mail.cc-email}") String emailCC) {
         this.mailSender = mailSender;
         this.jwtService = jwtService;
         this.springEmailFrom = springEmailFrom;
+        this.emailCC = emailCC;
     }
     public void sendWelcomeEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(springEmailFrom);
+        message.setCc(emailCC);
         message.setTo(to);
         message.setSubject("Welcome to G24 🎉,Willkommen bei G24 🎉,Bienvenue sur G24 🎉,Benvenuto su G24 🎉");
         message.setText("Hello " + to + ",\n\nWelcome to G24! We're glad to have you 🚀.\n"+
@@ -35,6 +38,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(springEmailFrom);
         message.setTo(to);
+        message.setCc(emailCC);
         message.setSubject("G24 password reset");
         String resetToken = jwtService.generateResetToken(to);
 

@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**") // adjust if needed
-                        .allowedOrigins("https://g24-frontend.ashyhill-9796b5b9.westeurope.azurecontainerapps.io")
+                        .allowedOrigins("http://localhost:4200","https://www.g-24.ch","https://g24-frontend.ashyhill-9796b5b9.westeurope.azurecontainerapps.io")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*");
             }
