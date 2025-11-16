@@ -7,6 +7,7 @@ public class Utility {
 
     public static final String UNIT_MGDL = "1";
     public static final String UNIT_MMOLL = "2";
+    public static final String ORIGIN="mobile";
 
     public static double convertSugar(double val, String unitId, String unit) {
 

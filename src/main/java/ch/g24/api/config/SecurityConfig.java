@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 public class SecurityConfig {
@@ -31,10 +32,25 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login","/api/first-registration","/api/forgot-password","/api/reset-password").permitAll()
+                        // Allow preflight OPTIONS for all paths
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Public API endpoints
+                        .requestMatchers(
+                                "/api/login",
+                                "/api/first-registration",
+                                "/api/forgot-password",
+                                "/api/reset-password"
+                        ).permitAll()
+
+                        // Actuator
                         .requestMatchers("/actuator/**").permitAll()
+
+                        // All other requests require authentication
                         .anyRequest().authenticated()
-                ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -55,4 +71,3 @@ public class SecurityConfig {
         return new ProviderManager(authProvider);
     }
 }
-

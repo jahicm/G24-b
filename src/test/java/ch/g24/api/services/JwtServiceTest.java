@@ -36,6 +36,7 @@ class JwtServiceTest {
     void generateToken_shouldCreateValidJwt() {
         // Arrange
         UserEntity userEntity = new UserEntity();
+
         userEntity.setUserId(123L);
         userEntity.setUserName("testuser");
         when(userRepository.findByUserName("testuser")).thenReturn(Optional.of(userEntity));
@@ -43,7 +44,7 @@ class JwtServiceTest {
         User userDetails = new User("testuser", "password", List.of());
 
         // Act
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateToken(userDetails,"");
 
         // Assert
         assertNotNull(token);
@@ -63,7 +64,7 @@ class JwtServiceTest {
 
         User userDetails = new User("alice", "pass", List.of());
 
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateToken(userDetails,"");
         Long userId = jwtService.extractClaim(token, claims -> ((Number) claims.get("userId")).longValue());
 
         assertEquals(456L, userId);
@@ -77,7 +78,7 @@ class JwtServiceTest {
         when(userRepository.findByUserName("bob")).thenReturn(Optional.of(userEntity));
 
         User userDetails = new User("bob", "pass", List.of());
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateToken(userDetails,"");
 
         User otherUser = new User("alice", "pass", List.of());
         boolean valid = jwtService.validateToken(token, otherUser);

@@ -6,6 +6,7 @@ import ch.g24.api.repository.persistence.UserRepository;
 import ch.g24.api.security.AuthRequest;
 import ch.g24.api.services.EmailService;
 import ch.g24.api.services.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -42,14 +43,18 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletRequest requestHeader) {
         try {
+
+            String origin = requestHeader.getHeader("X-Client-Type");
+            logger.info("Calling login:"+origin);
+
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
 
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            String token = jwtService.generateToken(userDetails);
+            String token = jwtService.generateToken(userDetails,origin);
 
             return ResponseEntity.ok(Map.of("token", token));
         } catch (AuthenticationException e) {
@@ -60,7 +65,7 @@ public class LoginController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(@RequestParam String email) {
-
+        logger.info("**********Forget password************");
         UserEntity userEntity = userRepository.findByUserName(email).orElseThrow(() -> new RuntimeException("Failed to find user"));
         emailService.sendPasswordResetEmail(email);
         Map<String, String> response = new HashMap<>();
