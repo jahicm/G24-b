@@ -38,7 +38,7 @@ public class EmailService {
         message.setSubject("G24 password reset");
         String resetToken = jwtService.generateResetToken(to);
 
-        String resetLink = "https://g24-frontend.ashyhill-9796b5b9.westeurope.azurecontainerapps.io/g24/reset-password?token=" + resetToken;
+        String resetLink = "https://www.g-24.ch/g24/reset-password?token=" + resetToken;
         message.setText("Username:"+to+"\n"+"Password URL:\n" + resetLink+"\n"+" Please use this link to reset your password within 1 hour.\n"
         +"\" Bitte verwenden Sie diesen Link, um Ihr Passwort innerhalb von 1 Stunde zurückzusetzen.\n"
         +"\" Veuillez utiliser ce lien pour réinitialiser votre mot de passe dans l'heure qui suit.\n"
