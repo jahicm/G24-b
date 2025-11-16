@@ -80,7 +80,6 @@ public class JwtService {
                 .filter(o -> o.equals(Utility.ORIGIN))
                 .map(o -> 165)
                 .orElse(1);
-
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
