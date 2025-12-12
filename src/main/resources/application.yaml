@@ -1,47 +1,62 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /g24
 spring:
   application:
     name: g24
   datasource:
-    url: jdbc:postgresql://localhost:5432/G24
-    username: postgres
-    password: 8aiMehrI
+    url: '${SPRING_DATASOURCE_URL}'
+    username: '${SPRING_DATASOURCE_USERNAME}'
+    password: '${SPRING_DATASOURCE_PASSWORD}'
     driver-class-name: org.postgresql.Driver
     initialization-mode: always
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
+    hikari:
+      maxLifetime: 700000
+      maximumPoolSize: 10
+      connectionTimeout: 30000
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: false
       hibernate:
-        format_sql: true
+        ddl-auto: none
+      properties:
+        hibernate:
+          format_sql: true
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
   mail:
-    host: smtp.sendgrid.net
-    port: 587
-    username: apikey
-    password: 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
-    from: g-24@bluewin.ch
-    cc-email: mirzajahic1@hotmail.com
+    host: '${SPRING_SMTP_HOST}'
+    port: '${SPRING_SMTP_PORT}'
+    username: '${SPRING_MAIL_USERNAME}'
+    password: '${SPRING_MAIL_PASSWORD}'
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: true
-
-server:
-  servlet:
-    context-path: /g24
-  port: 8080
-
-DEEPSEEK_URL: https://api.deepseek.com/v1/chat/completions
-DEEPSEEK_API_KEY: sk-ffe8a7cee4264152ab9c3ffe790600ef
-
+            enable: false
+    from: '${SPRING_MAIL_FROM}'
+logging:
+  file:
+    name: /app/logs/g24.log
+    max-size: 10MB
+  level:
+    root: INFO
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: 'health,info'
+DEEPSEEK_URL: '${DEEPSEEK_URL}'
+DEEPSEEK_API_KEY: '${DEEPSEEK_API_KEY}'
 jwt:
-  secret: m365DpXCq3NQT/ZkODvhV0PKpRIGTcwRHpjUwPSh2U4=
-  expiration: 3600000
+  secret: '${JWT_SECRET}'
+  expiration: '${JWT_EXPIRATION}'
