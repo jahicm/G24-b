@@ -16,9 +16,13 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
-                "https://www.g-24.ch",
-                "https://g24-frontend.ashyhill-9796b5b9.westeurope.azurecontainerapps.io"
+                "https://localhost",
+                "http://localhost:*",                        // web dev
+                "https://www.g-24.ch",                       // production web
+                "https://g24-frontend.ashyhill-9796b5b9.westeurope.azurecontainerapps.io", // Azure frontend
+                "capacitor://localhost",                     // Android emulator & device WebView
+                "http://10.0.2.2:*",                         // Android emulator mapping to host
+                "http://192.168.*.*"                         // real device in LAN (local testing)
         ));
 
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
